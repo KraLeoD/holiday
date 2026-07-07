@@ -1,0 +1,78 @@
+// Dev Container that boots Claude Code against AWS Bedrock, with extended
+// thinking (built in) and web search (via the Brave MCP server, since the
+// standard Bedrock Invoke API does not expose the native WebSearch tool).
+//
+// Prerequisites in AWS: on the Amazon Bedrock "Model access" page, request
+// access to the Anthropic model(s) you pin below (granted immediately after
+// the use-case form). Provide credentials via Codespaces/host env (see notes).
+{
+  "name": "Claude Code + AWS Bedrock",
+
+  // Base image with Node.js (Claude Code + the MCP server run via npm/npx)
+  // plus a couple of features handy for this Terraform repo.
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" },
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {}
+  },
+
+  // --- Model / provider configuration -------------------------------------
+  "containerEnv": {
+    // Route Claude Code through Amazon Bedrock (Invoke API).
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+
+    // Region for Bedrock. us-east-1 has the widest model availability.
+    "AWS_REGION": "us-east-1",
+
+    // NOTE: no credentials are set here on purpose — never commit AWS keys to a
+    // file that lives in the repo. Credentials come from the environment instead:
+    //   - Codespaces: add AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY as Codespaces
+    //     secrets (they arrive as env vars automatically).
+    //   - Local Dev Containers: the ~/.aws bind mount below supplies them; if you
+    //     use a named profile, uncomment and set "AWS_PROFILE".
+    // "AWS_PROFILE": "default",
+
+    // Primary model — Bedrock cross-region inference profile ID (us. prefix).
+    // Must be enabled on the Bedrock "Model access" page for your account.
+    // Swap to us.anthropic.claude-sonnet-4-6 / claude-opus-4-8 etc. as desired.
+    "ANTHROPIC_MODEL": "us.anthropic.claude-opus-4-6-v1",
+
+    // Small/fast model for background tasks (titles, etc.).
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+
+    // --- Extended thinking -----------------------------------------------
+    // Sonnet/Opus 4.x use adaptive reasoning and think automatically, so
+    // thinking is effectively always on. MAX_THINKING_TOKENS still sets a fixed
+    // budget for models that use one; bump it for deeper reasoning.
+    "MAX_THINKING_TOKENS": "16000"
+  },
+
+  // Make host AWS credentials available inside the container (read-only).
+  // Used by local Dev Containers; harmless in Codespaces (where env secrets win).
+  "mounts": [
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached,readonly"
+  ],
+
+  // Install Claude Code once when the container is created.
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code && claude --version",
+
+  // Launch Claude Code in the terminal each time you attach to the container.
+  // (postCreateCommand output is not interactive; postAttachCommand runs in the
+  // attached terminal so you get a live session. Use `claude` for interactive
+  // or e.g. `claude --dangerously-skip-permissions` if you want it unattended.)
+  "postAttachCommand": "claude",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "hashicorp.terraform"
+      ]
+    }
+  }
+
+  // Web search is provided by the keyless DuckDuckGo MCP server declared in
+  // ../.mcp.json (repo root) — no API key or signup required (runs via npx).
+  // WebFetch (reading a known URL) also works on Bedrock with no extra setup.
+}
