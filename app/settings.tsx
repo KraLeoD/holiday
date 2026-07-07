@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
-import { Text, TextInput, Button, useTheme, Appbar, Surface, Divider } from "react-native-paper";
+import { Text, TextInput, Button, useTheme, Appbar, Surface, Divider, Switch } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAppContext } from "./_layout";
 import { updatePerson, type Person } from "@/lib/api";
@@ -19,7 +19,7 @@ const COLORS = [
 export default function SettingsScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { currentPerson, refreshPersons } = useAppContext();
+  const { currentPerson, refreshPersons, showOthers, toggleShowOthers } = useAppContext();
 
   const [name, setName] = useState(currentPerson?.name || "");
   const [color, setColor] = useState(currentPerson?.color || COLORS[0]);
@@ -109,6 +109,20 @@ export default function SettingsScreen() {
             autoCorrect={false}
           />
 
+          <Divider style={styles.divider} />
+
+          <Text variant="titleMedium" style={[styles.section, { color: theme.colors.onSurface }]}>
+            Display
+          </Text>
+          <View style={styles.switchRow}>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>
+              Show other people's busy days
+            </Text>
+            <Switch value={showOthers} onValueChange={toggleShowOthers} />
+          </View>
+
+          <Divider style={styles.divider} />
+
           <Button
             mode="contained"
             onPress={handleSave}
@@ -166,6 +180,12 @@ const styles = StyleSheet.create({
   },
   divider: {
     marginVertical: 24,
+  },
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 8,
   },
   saveButton: {
     marginTop: 8,

@@ -11,7 +11,7 @@ import { getMonthRange, MONTH_NAMES, formatDate } from "@/lib/dates";
 export default function CalendarScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { persons, currentPerson, switchPerson, darkMode, toggleDarkMode } = useAppContext();
+  const { persons, currentPerson, switchPerson, darkMode, toggleDarkMode, showOthers } = useAppContext();
 
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
@@ -98,15 +98,17 @@ export default function CalendarScreen() {
           <MonthGrid
             year={year}
             month={month}
-            persons={persons}
-            busyMap={busyMap}
+            persons={showOthers ? persons : persons.filter((p) => p.id === currentPerson?.id)}
+            busyMap={showOthers ? busyMap : Object.fromEntries(
+              Object.entries(busyMap).filter(([id]) => id === currentPerson?.id)
+            )}
             currentPersonId={currentPerson?.id || null}
             onDayPress={handleDayPress}
           />
         </Surface>
 
         <View style={styles.legend}>
-          {persons.map((person) => (
+          {(showOthers ? persons : persons.filter((p) => p.id === currentPerson?.id)).map((person) => (
             <Chip
               key={person.id}
               style={[styles.legendChip, { borderColor: person.color }]}

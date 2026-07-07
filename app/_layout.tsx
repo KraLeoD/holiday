@@ -3,7 +3,7 @@ import { PaperProvider } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
 import { Stack } from "expo-router";
 import { lightTheme, darkTheme } from "@/lib/theme";
-import { getIdentity, setIdentity, clearIdentity } from "@/lib/identity";
+import { getIdentity, setIdentity, clearIdentity, getShowOthers, setShowOthers as persistShowOthers } from "@/lib/identity";
 import { getPersons, createPerson, type Person } from "@/lib/api";
 import { PersonPicker } from "@/components/PersonPicker";
 
@@ -14,6 +14,8 @@ interface AppContextType {
   switchPerson: () => void;
   darkMode: boolean;
   toggleDarkMode: () => void;
+  showOthers: boolean;
+  toggleShowOthers: () => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -23,6 +25,8 @@ export const AppContext = createContext<AppContextType>({
   switchPerson: () => {},
   darkMode: false,
   toggleDarkMode: () => {},
+  showOthers: true,
+  toggleShowOthers: () => {},
 });
 
 export function useAppContext() {
@@ -31,6 +35,7 @@ export function useAppContext() {
 
 export default function RootLayout() {
   const [darkMode, setDarkMode] = useState(false);
+  const [showOthers, setShowOthers] = useState(true);
   const [persons, setPersons] = useState<Person[]>([]);
   const [currentPerson, setCurrentPerson] = useState<Person | null>(null);
   const [showPicker, setShowPicker] = useState(false);
@@ -51,6 +56,10 @@ export default function RootLayout() {
     } catch {
       return [];
     }
+  }, []);
+
+  useEffect(() => {
+    setShowOthers(getShowOthers());
   }, []);
 
   useEffect(() => {
@@ -97,12 +106,20 @@ export default function RootLayout() {
 
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
+  const toggleShowOthers = () => {
+    setShowOthers((prev) => {
+      const next = !prev;
+      persistShowOthers(next);
+      return next;
+    });
+  };
+
   if (!initialized) return null;
 
   return (
     <PaperProvider theme={theme}>
       <AppContext.Provider
-        value={{ persons, currentPerson, refreshPersons, switchPerson, darkMode, toggleDarkMode }}
+        value={{ persons, currentPerson, refreshPersons, switchPerson, darkMode, toggleDarkMode, showOthers, toggleShowOthers }}
       >
         <StatusBar style={darkMode ? "light" : "dark"} />
         <Stack screenOptions={{ headerShown: false }} />

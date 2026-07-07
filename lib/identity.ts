@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 
 const COOKIE_NAME = "person_id";
+const SHOW_OTHERS_KEY = "show_others";
 
 export function getIdentity(): string | null {
   if (Platform.OS !== "web") return null;
@@ -17,4 +18,21 @@ export function setIdentity(personId: string): void {
 export function clearIdentity(): void {
   if (Platform.OS !== "web") return;
   document.cookie = `${COOKIE_NAME}=; path=/; max-age=0`;
+}
+
+export function getShowOthers(): boolean {
+  if (Platform.OS !== "web") return true;
+  try {
+    const val = localStorage.getItem(SHOW_OTHERS_KEY);
+    return val !== "false";
+  } catch {
+    return true;
+  }
+}
+
+export function setShowOthers(show: boolean): void {
+  if (Platform.OS !== "web") return;
+  try {
+    localStorage.setItem(SHOW_OTHERS_KEY, String(show));
+  } catch {}
 }
