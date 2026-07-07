@@ -1,0 +1,44 @@
+# Holiday Calendar
+
+A shared availability calendar for a small group of friends to find free windows for trips. Each person marks their busy days (manually or via an ICS calendar feed), and the month grid makes it easy to spot when everyone is free.
+
+## Features
+
+- **Month grid view** — busy days shown as stacked color bars per person, blank = everyone free
+- **ICS feed sync** — paste a read-only calendar URL and busy days are imported automatically every 15 minutes (supports recurring events/RRULE)
+- **Manual busy days** — tap a day to mark yourself busy or free
+- **Privacy first** — only busy/free status is stored, never event titles
+- **Per-person visibility** — hide individual people's colors from your view
+- **Light + dark mode** — MD3-inspired design with a bright modern look
+- **Simple identity** — pick your name and color on first visit, no login required (relies on external auth gate like Authentik)
+
+## Running locally
+
+```bash
+npm install
+npm run dev:server   # Fastify API on :3000
+npm run dev:web      # Expo web dev server
+```
+
+## Production
+
+Single container serving both the API and static frontend, with SQLite on a mounted volume.
+
+```bash
+docker compose up
+```
+
+Or pull the pre-built image:
+
+```bash
+docker pull ghcr.io/kraleod/holiday:latest
+```
+
+The image is built for both `linux/amd64` and `linux/arm64`.
+
+## Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3000` | Server listen port |
+| `DB_PATH` | `/data/calendar.db` | SQLite database file path |
