@@ -19,7 +19,7 @@ const COLORS = [
 export default function SettingsScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { currentPerson, refreshPersons, showOthers, toggleShowOthers } = useAppContext();
+  const { currentPerson, refreshPersons, persons, hiddenPersonIds, togglePersonVisibility } = useAppContext();
 
   const [name, setName] = useState(currentPerson?.name || "");
   const [color, setColor] = useState(currentPerson?.color || COLORS[0]);
@@ -112,14 +112,25 @@ export default function SettingsScreen() {
           <Divider style={styles.divider} />
 
           <Text variant="titleMedium" style={[styles.section, { color: theme.colors.onSurface }]}>
-            Display
+            Visibility
           </Text>
-          <View style={styles.switchRow}>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>
-              Show other people's busy days
-            </Text>
-            <Switch value={showOthers} onValueChange={toggleShowOthers} />
-          </View>
+          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 12 }}>
+            Toggle which people's busy days are shown on the calendar.
+          </Text>
+          {persons
+            .filter((p) => p.id !== currentPerson?.id)
+            .map((person) => (
+              <View key={person.id} style={styles.switchRow}>
+                <View style={[styles.personDot, { backgroundColor: person.color }]} />
+                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>
+                  {person.name}
+                </Text>
+                <Switch
+                  value={!hiddenPersonIds.includes(person.id)}
+                  onValueChange={() => togglePersonVisibility(person.id)}
+                />
+              </View>
+            ))}
 
           <Divider style={styles.divider} />
 
@@ -184,8 +195,13 @@ const styles = StyleSheet.create({
   switchRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: 12,
     paddingVertical: 8,
+  },
+  personDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
   },
   saveButton: {
     marginTop: 8,

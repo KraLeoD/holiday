@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 
 const COOKIE_NAME = "person_id";
-const SHOW_OTHERS_KEY = "show_others";
+const HIDDEN_PERSONS_KEY = "hidden_persons";
 
 export function getIdentity(): string | null {
   if (Platform.OS !== "web") return null;
@@ -20,19 +20,19 @@ export function clearIdentity(): void {
   document.cookie = `${COOKIE_NAME}=; path=/; max-age=0`;
 }
 
-export function getShowOthers(): boolean {
-  if (Platform.OS !== "web") return true;
+export function getHiddenPersons(): string[] {
+  if (Platform.OS !== "web") return [];
   try {
-    const val = localStorage.getItem(SHOW_OTHERS_KEY);
-    return val !== "false";
+    const val = localStorage.getItem(HIDDEN_PERSONS_KEY);
+    return val ? JSON.parse(val) : [];
   } catch {
-    return true;
+    return [];
   }
 }
 
-export function setShowOthers(show: boolean): void {
+export function setHiddenPersons(ids: string[]): void {
   if (Platform.OS !== "web") return;
   try {
-    localStorage.setItem(SHOW_OTHERS_KEY, String(show));
+    localStorage.setItem(HIDDEN_PERSONS_KEY, JSON.stringify(ids));
   } catch {}
 }
