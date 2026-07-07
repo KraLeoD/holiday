@@ -68,6 +68,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # Talos on Hetzner is amd64; add ",linux/arm64" only if you need it
-          # (it roughly doubles build time).
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
