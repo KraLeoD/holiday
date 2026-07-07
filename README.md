@@ -12,6 +12,9 @@ A shared availability calendar for a small group of friends to find free windows
 - **Light + dark mode** — MD3-inspired design with a bright modern look
 - **Simple identity** — pick your name and color on first visit, no login required (relies on external auth gate like Authentik)
 
+<img width="1079" height="1334" alt="Screenshot_20260707_214710_Firefox" src="https://github.com/user-attachments/assets/0790eb5c-4496-4725-a80c-a7eaa9c6fb8b" />
+
+
 ## Running locally
 
 ```bash
