@@ -36,6 +36,7 @@ export function DayCell({ day, isToday, busyPersons, isOwnBusy, onPress }: DayCe
     >
       <Text
         variant="bodySmall"
+        pointerEvents="none"
         style={[
           styles.dayNumber,
           {
@@ -47,7 +48,7 @@ export function DayCell({ day, isToday, busyPersons, isOwnBusy, onPress }: DayCe
         {day}
       </Text>
       {hasBusy && (
-        <View style={styles.barsContainer}>
+        <View style={styles.barsContainer} pointerEvents="none">
           {busyPersons.map((person) => (
             <View
               key={person.id}
