@@ -24,12 +24,12 @@ export function MonthGrid({ year, month, persons, busyMap, currentPersonId, onDa
 
   // Build lookup: date -> person[]
   const dateBusy = new Map<string, Person[]>();
-  for (const [personId, dates] of Object.entries(busyMap)) {
+  for (const [personId, entries] of Object.entries(busyMap)) {
     const person = personMap.get(personId);
     if (!person) continue;
-    for (const date of dates) {
-      if (!dateBusy.has(date)) dateBusy.set(date, []);
-      dateBusy.get(date)!.push(person);
+    for (const entry of entries) {
+      if (!dateBusy.has(entry.date)) dateBusy.set(entry.date, []);
+      dateBusy.get(entry.date)!.push(person);
     }
   }
 

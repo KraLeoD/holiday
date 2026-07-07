@@ -59,15 +59,18 @@ export default function CalendarScreen() {
 
   const handleDayPress = async (dateStr: string) => {
     if (!currentPerson) return;
-    const personDates = busyMap[currentPerson.id] || [];
-    const isBusy = personDates.includes(dateStr);
+    const personEntries = busyMap[currentPerson.id] || [];
+    const entry = personEntries.find((e) => e.date === dateStr);
+    const isManualBusy = entry?.manual === true;
+    const isBusy = !!entry;
 
     try {
-      if (isBusy) {
+      if (isManualBusy) {
         await removeBusyDay(currentPerson.id, dateStr);
-      } else {
+      } else if (!isBusy) {
         await addBusyDays(currentPerson.id, [dateStr]);
       }
+      // If busy from ICS only (not manual), tapping does nothing — can't remove ICS days
       await fetchBusy();
     } catch {
       // Silently fail

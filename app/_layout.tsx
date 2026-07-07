@@ -42,6 +42,11 @@ export default function RootLayout() {
     try {
       const data = await getPersons();
       setPersons(data);
+      setCurrentPerson((prev) => {
+        if (!prev) return prev;
+        const updated = data.find((p) => p.id === prev.id);
+        return updated || prev;
+      });
       return data;
     } catch {
       return [];

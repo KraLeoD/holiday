@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { getDb } from "../db.js";
 import { nanoid } from "nanoid";
+import { syncPerson } from "../ics-sync.js";
 
 export async function personsRoutes(app: FastifyInstance) {
   app.get("/api/persons", async () => {
@@ -44,6 +45,9 @@ export async function personsRoutes(app: FastifyInstance) {
       }
       if (ics_url !== undefined) {
         db.prepare("UPDATE persons SET ics_url = ? WHERE id = ?").run(ics_url, id);
+        if (ics_url) {
+          syncPerson(id, ics_url).catch((e) => console.error("Sync after save failed:", e));
+        }
       }
 
       const updated = db.prepare("SELECT id, name, color, ics_url FROM persons WHERE id = ?").get(id);

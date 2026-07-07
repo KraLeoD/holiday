@@ -7,7 +7,12 @@ export interface Person {
   ics_url?: string | null;
 }
 
-export type BusyMap = Record<string, string[]>; // person_id -> date[]
+export interface BusyEntry {
+  date: string;
+  manual: boolean;
+}
+
+export type BusyMap = Record<string, BusyEntry[]>; // person_id -> entries
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {

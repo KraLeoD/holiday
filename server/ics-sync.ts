@@ -87,7 +87,7 @@ function expandEvent(event: IcsEvent, windowStart: Date, windowEnd: Date): strin
   return days.filter((d) => d >= formatDate(windowStart) && d <= formatDate(windowEnd));
 }
 
-async function syncPerson(personId: string, icsUrl: string): Promise<void> {
+export async function syncPerson(personId: string, icsUrl: string): Promise<void> {
   const db = getDb();
   const now = new Date();
   const windowStart = new Date(now.getFullYear(), now.getMonth(), 1);
