@@ -1,0 +1,9 @@
+node_modules/
+dist/
+server/dist/
+.expo/
+data/
+*.db
+.env
+.env.local
+public/favicon.png

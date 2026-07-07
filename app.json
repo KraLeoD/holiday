@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "Holiday Calendar",
+    "slug": "holiday-calendar",
+    "version": "1.0.0",
+    "scheme": "holiday-calendar",
+    "platforms": ["web"],
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

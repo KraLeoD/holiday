@@ -1,0 +1,18 @@
+services:
+  holiday-calendar:
+    image: ghcr.io/${GITHUB_REPOSITORY:-holiday-calendar}:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_PATH=/data/calendar.db
+      - PORT=3000
+    volumes:
+      - calendar-data:/data
+    restart: unless-stopped
+
+volumes:
+  calendar-data:
