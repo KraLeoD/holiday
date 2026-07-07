@@ -1,7 +1,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache python3 make g++
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
 FROM node:20-alpine AS build
@@ -17,7 +17,7 @@ ENV NODE_ENV=production
 RUN apk add --no-cache tini
 RUN mkdir -p /data
 
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 RUN apk add --no-cache python3 make g++ && \
     npm ci --omit=dev && \
     apk del python3 make g++
