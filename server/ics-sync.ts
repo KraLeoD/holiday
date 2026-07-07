@@ -15,20 +15,28 @@ interface IcsEvent {
 }
 
 function formatDate(d: Date): string {
-  return d.toISOString().split("T")[0];
+  // Use local date parts to avoid timezone shifts
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function getDaysBetween(start: Date, end: Date): string[] {
   const days: string[] = [];
-  const current = new Date(start);
-  current.setHours(0, 0, 0, 0);
-  const endDate = new Date(end);
-  endDate.setHours(0, 0, 0, 0);
+  const current = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate());
 
-  // For all-day events, end is typically the day after the last busy day
+  // Include the end date if the event ends after midnight on that day
+  const endHasTime = end.getHours() > 0 || end.getMinutes() > 0;
+
   while (current < endDate) {
     days.push(formatDate(current));
     current.setDate(current.getDate() + 1);
+  }
+  // Include the last day if the event ends partway through it
+  if (endHasTime) {
+    days.push(formatDate(endDate));
   }
   return days;
 }
