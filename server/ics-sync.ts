@@ -1,5 +1,6 @@
 import { getDb } from "./db.js";
 import { RRule, RRuleSet, rrulestr } from "rrule";
+import * as nodeIcal from "node-ical";
 
 const SYNC_INTERVAL_MS = 15 * 60 * 1000;
 
@@ -33,7 +34,6 @@ function getDaysBetween(start: Date, end: Date): string[] {
 }
 
 async function fetchAndParseIcs(url: string): Promise<Record<string, IcsEvent>> {
-  const nodeIcal = await import("node-ical");
   return (await nodeIcal.async.fromURL(url)) as Record<string, IcsEvent>;
 }
 
