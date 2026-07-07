@@ -20,19 +20,54 @@ npm run dev:server   # Fastify API on :3000
 npm run dev:web      # Expo web dev server
 ```
 
-## Production
+## Production with Docker Compose
 
 Single container serving both the API and static frontend, with SQLite on a mounted volume.
 
-```bash
-docker compose up
+### Using the pre-built image
+
+Create a `docker-compose.yml`:
+
+```yaml
+services:
+  holiday-calendar:
+    image: ghcr.io/kraleod/holiday:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_PATH=/data/calendar.db
+    volumes:
+      - calendar-data:/data
+    restart: unless-stopped
+
+volumes:
+  calendar-data:
 ```
 
-Or pull the pre-built image:
+Then run:
 
 ```bash
-docker pull ghcr.io/kraleod/holiday:latest
+docker compose up -d
 ```
+
+The app is available at `http://localhost:3000`.
+
+### Building locally
+
+```bash
+docker compose up -d --build
+```
+
+This builds the image from source and starts the container.
+
+### Updating
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+The SQLite database persists on the `calendar-data` volume, so updates are non-destructive.
 
 The image is built for both `linux/amd64` and `linux/arm64`.
 
